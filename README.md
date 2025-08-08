@@ -22,7 +22,7 @@ A modern, interactive 3D portfolio website showcasing engineering projects and c
 
 ## 🚀 Live Demo
 
-Visit: [https://abhishekjha.github.io/portfolio](https://abhishekjha.github.io/portfolio)
+Visit: [https://abhishek-dbz.github.io/portfolio](https://abhishek-dbz.github.io/abhishek/#portfolio)
 
 ## 📁 Project Structure
 
@@ -37,7 +37,7 @@ portfolio/
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/abhishekjha/portfolio.git
+   git clone https://github.com/abhishek-dbz/portfolio.git
    cd portfolio
    ```
 
@@ -115,7 +115,7 @@ This project is open source and available under the [MIT License](LICENSE).
 **Abhishek Jha**
 - 3D Generalist & Technical Artist
 - Electronic Engineering Student
-- Portfolio: [https://abhishekjha.github.io/portfolio](https://abhishekjha.github.io/portfolio)
+- Portfolio: [https://abhishek-dbz.github.io/portfolio](https://abhishek-dbz.github.io/portfolio)
 
 ## 🙏 Acknowledgments
 
