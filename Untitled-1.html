@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abhishek Jha - 3D Generalist & Technical Artist</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+
+    <style>
+        :root {
+            --bg-dark: #0A0A0A;
+            --bg-medium: #111111;
+            --border-color: #222222;
+            --text-light: #F5F5F5;
+            --text-medium: #A3A3A3;
+            --primary: #3B82F6;
+            --secondary: #8B5CF6;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+        }
+        .gradient-text {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .section-glow {
+            position: absolute;
+            pointer-events: none;
+            z-index: -1;
+            filter: blur(100px);
+            opacity: 0.15;
+        }
+        .card {
+            background-color: var(--bg-medium);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .card:hover {
+            transform: translateY(-8px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 30px -15px rgba(59, 130, 246, 0.2);
+        }
+        #hero-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        .hero-content {
+            z-index: 2;
+        }
+        .nav-link {
+            position: relative;
+            transition: color 0.3s;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--primary);
+            transition: width 0.3s;
+        }
+        .nav-link:hover {
+            color: var(--text-light);
+        }
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        .tag {
+            background-color: rgba(59, 130, 246, 0.1);
+            color: var(--primary);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+    </style>
+</head>
+<body class="overflow-x-hidden">
+
+    <!-- Header & Navigation -->
+    <header id="header" class="fixed top-0 left-0 w-full z-50 transition-all duration-300">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#" class="text-2xl font-bold tracking-tighter">Abhishek Jha</a>
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#about" class="nav-link text-base text-gray-400 font-medium">About</a>
+                <a href="#portfolio" class="nav-link text-base text-gray-400 font-medium">Portfolio</a>
+                <a href="#skills" class="nav-link text-base text-gray-400 font-medium">Skills</a>
+                <a href="#contact" class="nav-link text-base text-gray-400 font-medium">Contact</a>
+            </div>
+            <a href="#contact" class="hidden md:block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition-all">
+                Let's Talk
+            </a>
+            <button id="mobile-menu-btn" class="md:hidden text-2xl">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>
+            </button>
+        </nav>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-black/50 backdrop-blur-lg">
+            <a href="#about" class="block text-center py-3 px-6 text-gray-300 hover:text-white">About</a>
+            <a href="#portfolio" class="block text-center py-3 px-6 text-gray-300 hover:text-white">Portfolio</a>
+            <a href="#skills" class="block text-center py-3 px-6 text-gray-300 hover:text-white">Skills</a>
+            <a href="#contact" class="block text-center py-3 px-6 text-gray-300 hover:text-white">Contact</a>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="hero" class="relative h-screen flex items-center justify-center text-center overflow-hidden">
+        <canvas id="hero-canvas"></canvas>
+        <div class="hero-content relative max-w-4xl mx-auto px-4">
+            <h1 class="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter mb-4 animate-fade-in-up">
+                <span class="gradient-text">Engineering</span> Digital Realities
+            </h1>
+            <p class="text-lg md:text-xl max-w-2xl mx-auto text-gray-300 mb-8 animate-fade-in-up" style="animation-delay: 0.3s;">
+                I'm Abhishek Jha, a 3D Generalist and Technical Artist merging the precision of engineering with the boundless possibilities of digital art to build immersive and intelligent worlds.
+            </p>
+            <div class="animate-fade-in-up" style="animation-delay: 0.6s;">
+                <a href="#portfolio" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-lg text-lg transition-transform hover:scale-105 inline-block">
+                    View My Work
+                </a>
+            </div>
+        </div>
+        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 z-10">
+            <svg class="w-6 h-6 text-gray-400 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+        </div>
+    </section>
+
+    <main class="relative z-10 bg-black">
+        <!-- About Section -->
+        <section id="about" class="py-20 md:py-32 relative">
+            <div class="section-glow" style="top: 10%; left: -10%; width: 400px; height: 400px; background: var(--primary);"></div>
+            <div class="container mx-auto px-6">
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <h2 class="text-4xl md:text-5xl font-bold mb-6">About Me</h2>
+                        <p class="text-lg text-gray-300 mb-4 leading-relaxed">
+                            My journey into 3D began not in an art studio, but in the structured world of Electronic Engineering. This technical foundation in VLSI, data analytics, and cloud computing provides me with a unique perspective on creative challenges.
+                        </p>
+                        <p class="text-lg text-gray-300 leading-relaxed">
+                            I see animation as a powerful tool for problem-solving—whether it's visualizing complex data, simulating real-world systems, or architecting new digital worlds. My goal is to build experiences that are not only visually stunning but also intelligent, efficient, and purposeful.
+                        </p>
+                    </div>
+                    <div>
+                        <div class="p-8 rounded-2xl card">
+                            <div class="flex items-center mb-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mr-4 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M12 6V3m0 18v-3m6-9h-2.25a4.5 4.5 0 00-8.5 0H6m12 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                <h3 class="text-2xl font-bold">The Engineer-Artist</h3>
+                            </div>
+                            <p class="text-gray-400">
+                                My background allows me to bridge the gap between technical complexity and creative expression. I thrive on projects that demand both left-brain logic and right-brain artistry.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Portfolio Section -->
+        <section id="portfolio" class="py-20 md:py-32 bg-black">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl md:text-5xl font-bold mb-4">Portfolio</h2>
+                    <p class="text-lg text-gray-400 max-w-2xl mx-auto">A selection of my work, from 3D animations to complex engineering simulations.</p>
+                </div>
+
+                <!-- Engineering & Simulation Projects -->
+                <div class="mb-20">
+                    <h3 class="text-3xl font-bold mb-8 text-center md:text-left">Engineering & Simulation Projects</h3>
+                    <div class="grid md:grid-cols-1 lg:grid-cols-3 gap-8">
+                        <!-- Project 1: Smart Helmet -->
+                        <div class="card rounded-2xl overflow-hidden">
+                            <img src="https://placehold.co/600x400/0A0A0A/FFFFFF?text=Smart+Helmet+3D" alt="Smart Helmet Project" class="w-full h-56 object-cover">
+                            <div class="p-6">
+                                <h4 class="text-xl font-bold mb-2">Smart Helmet</h4>
+                                <p class="text-gray-400 mb-4 text-sm">An IoT-enabled helmet with accident detection and real-time SOS alerts.</p>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="tag text-xs font-medium py-1 px-2 rounded-full">IoT</span>
+                                    <span class="tag text-xs font-medium py-1 px-2 rounded-full">ESP32</span>
+                                    <span class="tag text-xs font-medium py-1 px-2 rounded-full">GPS/GSM</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Project 2: AI Traffic Control -->
+                        <div class="card rounded-2xl overflow-hidden">
+                            <img src="https://placehold.co/600x400/0A0A0A/FFFFFF?text=AI+Traffic+Control" alt="AI Traffic Control Project" class="w-full h-56 object-cover">
+                            <div class="p-6">
+                                <h4 class="text-xl font-bold mb-2">AI Smart Traffic Control</h4>
+                                <p class="text-gray-400 mb-4 text-sm">A system for safer, more efficient urban mobility using AI and computer vision.</p>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="tag text-xs font-medium py-1 px-2 rounded-full">AI/ML</span>
+                                    <span class="tag text-xs font-medium py-1 px-2 rounded-full">OpenCV</span>
+                                    <span class="tag text-xs font-medium py-1 px-2 rounded-full">Simulation</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Project 3: Smart Krishi Sahayak -->
+                        <div class="card rounded-2xl overflow-hidden">
+                            <img src="https://placehold.co/600x400/0A0A0A/FFFFFF?text=Smart+Krishi+Sahayak" alt="Smart Krishi Sahayak Project" class="w-full h-56 object-cover">
+                            <div class="p-6">
+                                <h4 class="text-xl font-bold mb-2">Smart Krishi Sahayak</h4>
+                                <p class="text-gray-400 mb-4 text-sm">An all-in-one mobile app for modern farmers with AI-powered analysis.</p>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="tag text-xs font-medium py-1 px-2 rounded-full">Mobile App</span>
+                                    <span class="tag text-xs font-medium py-1 px-2 rounded-full">Firebase</span>
+                                    <span class="tag text-xs font-medium py-1 px-2 rounded-full">Gemini API</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3D & Animation Showcase -->
+                <div>
+                    <h3 class="text-3xl font-bold mb-8 text-center md:text-left">3D & Animation Showcase</h3>
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <!-- Add 3D projects here -->
+                        <div class="card rounded-2xl overflow-hidden">
+                            <img src="https://placehold.co/600x400/111111/FFFFFF?text=Procedural+City" alt="Procedural City" class="w-full h-56 object-cover">
+                            <div class="p-6">
+                                <h4 class="text-xl font-bold mb-2">Procedural Cityscape</h4>
+                                <p class="text-gray-400 text-sm">A vast, futuristic city generated using procedural animation techniques.</p>
+                            </div>
+                        </div>
+                        <div class="card rounded-2xl overflow-hidden">
+                            <img src="https://placehold.co/600x400/111111/FFFFFF?text=AWS+Visualization" alt="AWS Visualization" class="w-full h-56 object-cover">
+                            <div class="p-6">
+                                <h4 class="text-xl font-bold mb-2">Cloud Infrastructure Visualization</h4>
+                                <p class="text-gray-400 text-sm">Motion graphics piece explaining complex AWS cloud architecture.</p>
+                            </div>
+                        </div>
+                        <div class="card rounded-2xl overflow-hidden">
+                            <img src="https://placehold.co/600x400/111111/FFFFFF?text=Data+Narrative" alt="Data Narrative" class="w-full h-56 object-cover">
+                            <div class="p-6">
+                                <h4 class="text-xl font-bold mb-2">Data-Driven Narrative</h4>
+                                <p class="text-gray-400 text-sm">An animated short where the environment is generated based on a dataset.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section id="skills" class="py-20 md:py-32 relative bg-black">
+            <div class="section-glow" style="top: 20%; right: -10%; width: 500px; height: 500px; background: var(--secondary);"></div>
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl md:text-5xl font-bold mb-4">🛠️ My Skills</h2>
+                    <p class="text-lg text-gray-400 max-w-3xl mx-auto">A comprehensive overview of the programming languages, technologies, tools, and creative domains I specialize in.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Programming Languages -->
+                    <div class="card p-8 rounded-2xl">
+                        <h3 class="text-2xl font-bold mb-4">💻 Programming</h3>
+                        <ul class="space-y-3 text-gray-300">
+                            <li class="flex items-center"><span class="text-primary mr-3">◆</span>C / C++</li>
+                            <li class="flex items-center"><span class="text-primary mr-3">◆</span>Python</li>
+                            <li class="flex items-center"><span class="text-primary mr-3">◆</span>HTML & CSS</li>
+                            <li class="flex items-center"><span class="text-primary mr-3">◆</span>JavaScript (basic)</li>
+                        </ul>
+                    </div>
+                    <!-- Technologies & Platforms -->
+                    <div class="card p-8 rounded-2xl">
+                        <h3 class="text-2xl font-bold mb-4">🧠 Technologies</h3>
+                        <ul class="space-y-3 text-gray-300">
+                            <li class="flex items-center"><span class="text-primary mr-3">◆</span>Arduino IDE</li>
+                            <li class="flex items-center"><span class="text-primary mr-3">◆</span>Firebase (basic)</li>
+                            <li class="flex items-center"><span class="text-primary mr-3">◆</span>WebSockets (basic)</li>
+                            <li class="flex items-center"><span class="text-primary mr-3">◆</span>LangChain (basic)</li>
+                            <li class="flex items-center"><span class="text-primary mr-3">◆</span>Xilinx (VHDL/Verilog)</li>
+                            <li class="flex items-center"><span class="text-primary mr-3">◆</span>LTSpice Simulation</li>
+                        </ul>
+                    </div>
+                    <!-- Tools & Software -->
+                    <div class="card p-8 rounded-2xl">
+                        <h3 class="text-2xl font-bold mb-4">🧰 Tools & Software</h3>
+                        <ul class="space-y-3 text-gray-300">
+                            <li class="flex items-center"><span class="text-primary mr-3">◆</span>MS Office Suite</li>
+                            <li class="flex items-center"><span class="text-primary mr-3">◆</span>Canva</li>
+                            <li class="flex items-center"><span class="text-primary mr-3">◆</span>VS Code</li>
+                            <li class="flex items-center"><span class="text-primary mr-3">◆</span>Git & GitHub</li>
+                        </ul>
+                    </div>
+                    <!-- Creative & Content Skills -->
+                    <div class="card p-8 rounded-2xl lg:col-span-2">
+                        <h3 class="text-2xl font-bold mb-4">🎨 Creative & Content</h3>
+                        <ul class="space-y-3 text-gray-300">
+                            <li class="flex items-center"><span class="text-primary mr-3">◆</span>Content Writing & Songwriting (English, Hindi, Sanskrit)</li>
+                            <li class="flex items-center"><span class="text-primary mr-3">◆</span>Proofreading (English)</li>
+                            <li class="flex items-center"><span class="text-primary mr-3">◆</span>Digital Presentation (Animated PowerPoint)</li>
+                        </ul>
+                    </div>
+                    <!-- Domains of Interest -->
+                    <div class="card p-8 rounded-2xl">
+                        <h3 class="text-2xl font-bold mb-4">🤖 Domains</h3>
+                         <ul class="space-y-3 text-gray-300">
+                            <li class="flex items-center"><span class="text-primary mr-3">◆</span>Artificial Intelligence</li>
+                            <li class="flex items-center"><span class="text-primary mr-3">◆</span>Robotics & IoT</li>
+                            <li class="flex items-center"><span class="text-primary mr-3">◆</span>Embedded Systems</li>
+                            <li class="flex items-center"><span class="text-primary mr-3">◆</span>3D Animation</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="py-20 md:py-32 bg-black">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl md:text-5xl font-bold mb-4">Let's Build Together</h2>
+                    <p class="text-lg text-gray-400 max-w-2xl mx-auto">Have a project in mind or just want to connect? Feel free to reach out.</p>
+                </div>
+                <div class="max-w-2xl mx-auto">
+                    <form id="contact-form" class="space-y-6">
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <input type="text" name="name" placeholder="Your Name" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            <input type="email" name="email" placeholder="Your Email" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                        </div>
+                        <textarea name="message" placeholder="Your Message" rows="5" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500" required></textarea>
+                        <div class="text-center">
+                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-10 rounded-lg text-lg transition-transform hover:scale-105">
+                                Send Message
+                            </button>
+                        </div>
+                        <div id="form-status" class="text-center mt-4 h-6"></div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-black border-t border-gray-800 py-8">
+        <div class="container mx-auto px-6 text-center text-gray-400">
+            <p>&copy; 2025 Abhishek Jha. All Rights Reserved.</p>
+            <p class="text-sm mt-2">Built with passion and code.</p>
+        </div>
+    </footer>
+
+    <!-- Firebase and Main Logic Script -->
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // IMPORTANT: Replace with your actual Firebase project configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyYOUR_API_KEY_HERE",
+            authDomain: "your-project-id.firebaseapp.com",
+            projectId: "your-project-id",
+            storageBucket: "your-project-id.appspot.com",
+            messagingSenderId: "your-sender-id",
+            appId: "your-app-id"
+        };
+
+        // This function will run once the entire HTML document is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // --- UI and Animation Logic ---
+            // This runs first to make sure the page is visually ready.
+
+            // Mobile Menu
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // Header Scroll Effect
+            const header = document.getElementById('header');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    header.classList.add('bg-black/50', 'backdrop-blur-lg', 'shadow-lg');
+                } else {
+                    header.classList.remove('bg-black/50', 'backdrop-blur-lg', 'shadow-lg');
+                }
+            });
+
+            // GSAP Animations
+            gsap.registerPlugin(ScrollTrigger);
+            
+            // Hero text animation
+            gsap.utils.toArray('.animate-fade-in-up').forEach((elem, i) => {
+                gsap.from(elem, { y: 50, opacity: 0, duration: 1, ease: 'power3.out', delay: i * 0.2 });
+            });
+
+            // --- Three.js Hero Scene ---
+            if (typeof THREE !== 'undefined') {
+                const scene = new THREE.Scene();
+                const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('hero-canvas'), alpha: true });
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setPixelRatio(window.devicePixelRatio);
+
+                const geometry = new THREE.IcosahedronGeometry(2, 1);
+                const material = new THREE.MeshStandardMaterial({ color: 0x3B82F6, metalness: 0.6, roughness: 0.3, wireframe: true, wireframeLinewidth: 2 });
+                const mainObject = new THREE.Mesh(geometry, material);
+                scene.add(mainObject);
+
+                const particlesGeometry = new THREE.BufferGeometry;
+                const particlesCount = 5000;
+                const posArray = new Float32Array(particlesCount * 3);
+                for (let i = 0; i < particlesCount * 3; i++) { posArray[i] = (Math.random() - 0.5) * 20; }
+                particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+                const particlesMaterial = new THREE.PointsMaterial({ size: 0.015, color: 0x8B5CF6, blending: THREE.AdditiveBlending, transparent: true, opacity: 0.8 });
+                const particleMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+                scene.add(particleMesh);
+
+                const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
+                scene.add(ambientLight);
+                const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
+                directionalLight.position.set(1, 1, 1);
+                scene.add(directionalLight);
+                camera.position.z = 5;
+
+                let mouseX = 0, mouseY = 0;
+                document.addEventListener('mousemove', (event) => {
+                    mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+                    mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+                });
+
+                const clock = new THREE.Clock();
+                const animate = () => {
+                    const elapsedTime = clock.getElapsedTime();
+                    mainObject.rotation.x = 0.2 * elapsedTime;
+                    mainObject.rotation.y = 0.2 * elapsedTime;
+                    camera.position.x += (mouseX * 0.5 - camera.position.x) * 0.05;
+                    camera.position.y += (mouseY * 0.5 - camera.position.y) * 0.05;
+                    camera.lookAt(scene.position);
+                    particleMesh.rotation.y = -0.05 * elapsedTime;
+                    renderer.render(scene, camera);
+                    window.requestAnimationFrame(animate);
+                };
+                animate();
+
+                window.addEventListener('resize', () => {
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                    camera.aspect = window.innerWidth / window.innerHeight;
+                    camera.updateProjectionMatrix();
+                });
+            }
+
+            // --- Firebase Initialization and Contact Form Logic ---
+            // This runs last, so it won't block the page from showing.
+            try {
+                const app = initializeApp(firebaseConfig);
+                const db = getFirestore(app);
+                console.log("Firebase Initialized Successfully for Contact Form");
+
+                const contactForm = document.getElementById('contact-form');
+                const formStatus = document.getElementById('form-status');
+
+                if (contactForm) {
+                    contactForm.addEventListener('submit', async (e) => {
+                        e.preventDefault();
+                        const name = contactForm.name.value;
+                        const email = contactForm.email.value;
+                        const message = contactForm.message.value;
+                        const submitButton = contactForm.querySelector('button[type="submit"]');
+                        submitButton.disabled = true;
+                        submitButton.textContent = 'Sending...';
+                        formStatus.textContent = '';
+                        try {
+                            await addDoc(collection(db, "messages"), { name, email, message, timestamp: new Date() });
+                            formStatus.textContent = 'Message sent successfully! Thank you.';
+                            formStatus.style.color = '#10B981';
+                            contactForm.reset();
+                        } catch (error) {
+                            console.error("Error adding document: ", error);
+                            formStatus.textContent = 'Failed to send message. Please check Firebase setup.';
+                            formStatus.style.color = '#EF4444';
+                        } finally {
+                            submitButton.disabled = false;
+                            submitButton.textContent = 'Send Message';
+                        }
+                    });
+                }
+            } catch (e) {
+                console.error("Firebase initialization failed. Please add your config details.", e);
+                const formStatus = document.getElementById('form-status');
+                if(formStatus) {
+                    formStatus.textContent = 'Contact form is currently unavailable.';
+                    formStatus.style.color = '#F59E0B';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
